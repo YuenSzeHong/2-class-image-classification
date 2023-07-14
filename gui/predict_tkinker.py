@@ -1,33 +1,31 @@
-import tkinter as tk
-from tkinter import filedialog, font
+from tkinter import filedialog, font, Tk, Label, Button
+
 from PIL import Image, ImageTk
 from keras.models import load_model
 
 from commons.test import load_image
 
-CLASS1_NAME = "cat"
-CLASS2_NAME = "dog"
+CLASS1_NAME = "man"
+CLASS2_NAME = "women"
 IMAGE_DISPLAY_SIZE = 512
 
 
-class MainWindow(tk.Frame):
-    def __init__(self, master=None):
-        super().__init__(master)
-
+class MainWindow:
+    def __init__(self, master):
         # set window title
-        self.master.title("Prediction GUI")
+        master.title("Prediction GUI")
 
         # create widgets
-        self.image_label = tk.Label(self, text="Image:")
-        self.image_path_label = tk.Label(self, text="")
-        self.image_button = tk.Button(self, text="Choose", command=self.choose_image)
-        self.input_image_label = tk.Label(self)
-        self.model_label = tk.Label(self, text="Model:")
-        self.model_path_label = tk.Label(self, text="")
-        self.model_button = tk.Button(self, text="Choose", command=self.choose_model)
-        self.predict_button = tk.Button(self, text="Predict", command=self.predict)
-        self.result_label = tk.Label(self, text="Result:")
-        self.result_text_label = tk.Label(self, text="")
+        self.image_label = Label(master, text="Image:")
+        self.image_path_label = Label(master, text="")
+        self.image_button = Button(master, text="Choose", command=self.choose_image)
+        self.input_image_label = Label(master)
+        self.model_label = Label(master, text="Model:")
+        self.model_path_label = Label(master, text="")
+        self.model_button = Button(master, text="Choose", command=self.choose_model)
+        self.predict_button = Button(master, text="Predict", command=self.predict)
+        self.result_label = Label(master, text="Result:")
+        self.result_text_label = Label(master, text="")
 
         # create layout
         self.image_label.grid(row=0, column=0)
@@ -44,7 +42,7 @@ class MainWindow(tk.Frame):
     def choose_image(self):
         # open file dialog to select image file
         file_path = filedialog.askopenfilename(
-            title="Open Image", filetypes=[("Image Files", "*.png;*.jpg;*.bmp")]
+            title="Open Image", filetypes=[("Image Files", "*.png *.jpg *.bmp")]
         )
         if file_path:
             self.image_path_label.config(text=file_path)
@@ -89,16 +87,15 @@ class MainWindow(tk.Frame):
         # with the individual class probabilities
         self.result_text_label.config(
             text=f"{class_label.capitalize()} " +
-                 f" ({CLASS1_NAME.capitalize()}: {result}, " +
-                 f"{CLASS2_NAME.capitalize()}: {1 - result})"
+            f" ({CLASS1_NAME.capitalize()}: {result[0][0]}, " +
+            f"{CLASS2_NAME.capitalize()}: {1 - result[0][0]})"
         )
 
 
 if __name__ == "__main__":
-    root = tk.Tk()
+    root = Tk()
     font.nametofont("TkDefaultFont").configure(
         size=12
     )
     window = MainWindow(root)
-    window.pack()
     root.mainloop()

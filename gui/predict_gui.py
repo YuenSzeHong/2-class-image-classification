@@ -94,8 +94,8 @@ class MainWindow(QWidget):
         # with the individual class probabilities
         self.result_text_label.setText(
             f"{class_label.capitalize()} " +
-            f" ({CLASS1_NAME.capitalize()}: {result[0][0]}, " +
-            f"{CLASS2_NAME.capitalize()}: {1 - result[0][0]})")
+            f" ({CLASS1_NAME.capitalize()}: {(1 - result[0][0]):.2f}, " +
+            f"{CLASS2_NAME.capitalize()}: {result[0][0]:.2f})")
 
 
 if __name__ == "__main__":

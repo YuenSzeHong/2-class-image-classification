@@ -47,7 +47,20 @@ class MainWindow:
         if file_path:
             self.image_path_label.config(text=file_path)
             image = Image.open(file_path)
-            image = image.resize((IMAGE_DISPLAY_SIZE, IMAGE_DISPLAY_SIZE), Image.ANTIALIAS)
+
+            # calculate aspect ratio of original image
+            width, height = image.size
+            aspect_ratio = width / height
+
+            # resize image to fit within display area while preserving aspect ratio
+            if width > height:
+                new_width = IMAGE_DISPLAY_SIZE
+                new_height = int(new_width / aspect_ratio)
+            else:
+                new_height = IMAGE_DISPLAY_SIZE
+                new_width = int(new_height * aspect_ratio)
+            image = image.resize((new_width, new_height), Image.LANCZOS)
+
             photo = ImageTk.PhotoImage(image)
             self.input_image_label.config(image=photo)
             self.input_image_label.image = photo
@@ -87,8 +100,8 @@ class MainWindow:
         # with the individual class probabilities
         self.result_text_label.config(
             text=f"{class_label.capitalize()} " +
-            f" ({CLASS1_NAME.capitalize()}: {result[0][0]}, " +
-            f"{CLASS2_NAME.capitalize()}: {1 - result[0][0]})"
+                 f" ({CLASS1_NAME.capitalize()}: {(1 - result[0][0]):.2f}, " +
+                 f"{CLASS2_NAME.capitalize()}: {result[0][0]:.2f})"
         )
 
 

@@ -3,7 +3,7 @@ import os
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import \
     QApplication, QWidget, QPushButton, QLabel, QFileDialog, QTextEdit, \
-    QVBoxLayout, QHBoxLayout
+    QVBoxLayout, QHBoxLayout, QProgressBar
 from keras.models import load_model
 from commons.test import load_image
 
@@ -12,7 +12,9 @@ CLASS2_NAME = "dog"
 
 
 class TestThread(QThread):
+    started = pyqtSignal(int)
     finished = pyqtSignal(int, int, int, list)
+    progress = pyqtSignal(int)
 
     def __init__(self, model_path, test_dir):
         super().__init__()
@@ -28,6 +30,9 @@ class TestThread(QThread):
         wrong = 0
         count = 0
         wrong_files = []
+        total_files = len(os.listdir(os.path.join(self.test_dir, CLASS1_NAME))) + len(
+            os.listdir(os.path.join(self.test_dir, CLASS2_NAME)))
+        self.started.emit(total_files)
         for file in os.listdir(os.path.join(self.test_dir, CLASS1_NAME)):
             if file.endswith('.jpg') or file.endswith('.png'):
                 img_path = os.path.join(self.test_dir, CLASS1_NAME, file)
@@ -39,6 +44,7 @@ class TestThread(QThread):
                     wrong += 1
                     wrong_files.append(file)
                 count += 1
+                self.progress.emit(count)
 
         for file in os.listdir(os.path.join(self.test_dir, CLASS2_NAME)):
             if file.endswith('.jpg') or file.endswith('.png'):
@@ -51,6 +57,7 @@ class TestThread(QThread):
                     wrong += 1
                     wrong_files.append(file)
                 count += 1
+                self.progress.emit(count)
         # emit signal with test result
         self.finished.emit(correct, wrong, count, wrong_files)
 
@@ -83,6 +90,9 @@ class MainWindow(QWidget):
         self.result_text = QTextEdit(self)
         self.result_text.setReadOnly(True)
 
+        self.progress_bar = QProgressBar(self)
+        self.progress_bar.setRange(0, 100)
+
         # create layouts
         model_layout = QHBoxLayout()
         model_layout.addWidget(self.model_label)
@@ -102,6 +112,7 @@ class MainWindow(QWidget):
         main_layout.addLayout(model_layout)
         main_layout.addLayout(test_layout)
         main_layout.addLayout(button_layout)
+        main_layout.addWidget(self.progress_bar)
         main_layout.addWidget(self.result_label)
         main_layout.addWidget(self.result_text)
 
@@ -137,6 +148,8 @@ class MainWindow(QWidget):
         # start test thread
         self.test_thread = TestThread(model_path, test_dir)
         self.test_thread.finished.connect(self.test_finished)
+        self.test_thread.started.connect(self.progress_bar.setMaximum)
+        self.test_thread.progress.connect(self.progress_bar.setValue)
         self.test_thread.start()
 
     def test_finished(self, correct, wrong, count, wrong_files):

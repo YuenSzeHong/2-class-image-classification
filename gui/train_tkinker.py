@@ -8,8 +8,8 @@ from tensorflow.keras.callbacks import Callback
 from commons.model import define_model
 
 NUM_EPOCHS = 3
-CLASS1_NAME = "cats"
-CLASS2_NAME = "dogs"
+CLASS1_NAME = "cat"
+CLASS2_NAME = "dog"
 
 
 class UpdateWidgetsCallback(Callback):
@@ -174,7 +174,6 @@ class MainWindow:
             self.train_thread.stop()
         except AttributeError:
             pass
-        self.train_thread.terminate()
         self.result_text.insert(END, "Training stopped.\n")
         # enable train button and disable stop button
         self.train_button.config(state=NORMAL)

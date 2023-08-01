@@ -67,7 +67,8 @@ class TrainThread(Thread):
         # get final accuracy and loss
         final_acc = training.history['accuracy'][-1]
         final_loss = training.history['loss'][-1]
-        self.result_text.insert("Training Result", f"Training finished. Accuracy: {final_acc:.5f}, Loss: {final_loss:.5f}")
+        self.result_text.insert(END,
+                                "Training Result\n" + f"Training finished. Accuracy: {final_acc:.5f}, Loss: {final_loss:.5f}")
 
 
 class MainWindow:

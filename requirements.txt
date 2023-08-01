@@ -2,3 +2,4 @@ keras==2.13.1
 Pillow==10.0.0
 PyQt5==5.15.9
 PyQt5_sip==12.12.1
+tensorflow

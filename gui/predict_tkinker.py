@@ -27,17 +27,28 @@ class MainWindow:
         self.result_label = Label(master, text="Result:")
         self.result_text_label = Label(master, text="")
 
-        # create layout
+        # create layout, make file path in next row
         self.image_label.grid(row=0, column=0)
-        self.image_path_label.grid(row=0, column=1)
         self.image_button.grid(row=0, column=2)
-        self.input_image_label.grid(row=1, column=0, columnspan=3)
-        self.model_label.grid(row=2, column=0)
-        self.model_path_label.grid(row=2, column=1)
-        self.model_button.grid(row=2, column=2)
-        self.predict_button.grid(row=3, column=0, columnspan=3)
-        self.result_label.grid(row=4, column=0)
-        self.result_text_label.grid(row=5, column=2)
+        self.image_path_label.grid(row=1, column=0, columnspan=3)
+        self.input_image_label.grid(row=2, column=0, columnspan=3)
+        self.model_label.grid(row=3, column=0)
+        self.model_button.grid(row=3, column=2)
+        self.model_path_label.grid(row=4, column=0, columnspan=3)
+        self.predict_button.grid(row=5, column=0, columnspan=3)
+        self.result_label.grid(row=6, column=0)
+        self.result_text_label.grid(row=6, column=1)
+
+        # self.image_label.grid(row=0, column=0)
+        # self.image_path_label.grid(row=0, column=1)
+        # self.image_button.grid(row=0, column=2)
+        # self.input_image_label.grid(row=1, column=0, columnspan=3)
+        # self.model_label.grid(row=2, column=0)
+        # self.model_path_label.grid(row=2, column=1)
+        # self.model_button.grid(row=2, column=2)
+        # self.predict_button.grid(row=3, column=0, columnspan=3)
+        # self.result_label.grid(row=4, column=0)
+        # self.result_text_label.grid(row=5, column=2)
 
     def choose_image(self):
         # open file dialog to select image file

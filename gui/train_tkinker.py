@@ -76,7 +76,7 @@ class MainWindow:
         self.master = master
         self.master.title(f"Train {CLASS1_NAME.capitalize()} and {CLASS2_NAME.capitalize()}")
         self.train_thread = None
-        self.master.resizable(False, False)
+        # self.master.resizable(False, False)
 
         # create widgets
         self.title_label = Label(master, text=f"{CLASS1_NAME.capitalize()} vs {CLASS2_NAME.capitalize()} Trainer")
@@ -86,10 +86,13 @@ class MainWindow:
         self.data_frame = Frame(master)
         self.data_frame.pack(pady=10)
 
+        self.data_path_frame = Frame(self.data_frame)
+        self.data_path_frame.pack(side=BOTTOM)
+
         self.data_label = Label(self.data_frame, text="Data Directory:")
         self.data_label.pack(side=LEFT, padx=10)
 
-        self.data_path_label = Label(self.data_frame, text="")
+        self.data_path_label = Label(self.data_path_frame, text="")
         self.data_path_label.pack(side=LEFT)
 
         self.data_button = Button(self.data_frame, text="Choose", command=self.choose_data)
@@ -98,10 +101,13 @@ class MainWindow:
         self.model_frame = Frame(master)
         self.model_frame.pack(pady=10)
 
+        self.model_path_frame = Frame(self.model_frame)
+        self.model_path_frame.pack(side=BOTTOM)
+
         self.model_label = Label(self.model_frame, text="Model Path:")
         self.model_label.pack(side=LEFT, padx=10)
 
-        self.model_path_label = Label(self.model_frame, text="")
+        self.model_path_label = Label(self.model_path_frame, text="")
         self.model_path_label.pack(side=LEFT)
 
         self.model_button = Button(self.model_frame, text="Choose", command=self.choose_model)

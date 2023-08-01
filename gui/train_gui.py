@@ -1,8 +1,8 @@
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, pyqtSlot, QObject
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, \
     QFileDialog, QTextEdit, QVBoxLayout, QHBoxLayout, QProgressBar
-from keras.preprocessing.image import ImageDataGenerator
-from keras.src.callbacks import Callback
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.src.callbacks import Callback
 
 from commons.model import define_model
 

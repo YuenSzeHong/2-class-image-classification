@@ -4,7 +4,7 @@ from PyQt5.QtCore import Qt, QThread, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import \
     QApplication, QWidget, QPushButton, QLabel, QFileDialog, QTextEdit, \
     QVBoxLayout, QHBoxLayout, QProgressBar
-from keras.models import load_model
+from tensorflow.keras.models import load_model
 from commons.test import load_image
 
 CLASS1_NAME = "cat"

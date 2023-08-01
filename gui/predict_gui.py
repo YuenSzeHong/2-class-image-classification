@@ -6,8 +6,8 @@ from keras.models import load_model
 
 from commons.test import load_image
 
-CLASS1_NAME = "man"
-CLASS2_NAME = "women"
+CLASS1_NAME = "cat"
+CLASS2_NAME = "dog"
 IMAGE_DISPLAY_SIZE = 512
 
 

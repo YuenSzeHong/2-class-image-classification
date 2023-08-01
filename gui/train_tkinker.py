@@ -3,13 +3,13 @@ from tkinter import *
 from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import ttk
-from keras.preprocessing.image import ImageDataGenerator
-from keras.callbacks import Callback
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.callbacks import Callback
 from commons.model import define_model
 
 NUM_EPOCHS = 3
-CLASS1_NAME = "cat"
-CLASS2_NAME = "dog"
+CLASS1_NAME = "cats"
+CLASS2_NAME = "dogs"
 
 
 class UpdateWidgetsCallback(Callback):
@@ -56,6 +56,11 @@ class TrainThread(Thread):
                                  batch_size=64,
                                  target_size=(224, 224),
                                  classes=[CLASS1_NAME, CLASS2_NAME])
+
+        # check files in directory
+        if len(train_it.filenames) == 0:
+            messagebox.showerror("Error", "No images found in directory.")
+            return
 
         # fit model
         training = model.fit(train_it, steps_per_epoch=len(train_it),
@@ -152,6 +157,11 @@ class MainWindow:
         if not model_path:
             messagebox.showerror("Error", "Please choose a model path.")
             return
+
+        print(data_dir)
+
+
+
         # start train thread
         self.train_thread = TrainThread(model_path, data_dir, self.update_widgets, self.result_text)
         self.train_thread.start()
@@ -159,6 +169,11 @@ class MainWindow:
         self.stop_button.config(state=NORMAL)
 
     def stop_training(self):
+        try:
+            # stop train thread
+            self.train_thread.stop()
+        except AttributeError:
+            pass
         self.train_thread.terminate()
         self.result_text.insert(END, "Training stopped.\n")
         # enable train button and disable stop button

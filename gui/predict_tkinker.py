@@ -15,6 +15,9 @@ class MainWindow:
         # set window title
         master.title("Prediction GUI")
 
+        # set window size
+        master.geometry("800x600")
+
         # create widgets
         self.image_label = Label(master, text="Image:")
         self.image_path_label = Label(master, text="")

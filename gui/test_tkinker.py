@@ -1,6 +1,6 @@
 import os
 from tkinter import filedialog, messagebox, scrolledtext, font, Tk, Label, Button, END
-from keras.models import load_model
+from tensorflow.keras.models import load_model
 from commons.test import load_image
 
 CLASS1_NAME = "cat"

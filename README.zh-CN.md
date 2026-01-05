@@ -56,7 +56,7 @@ data_root
         └── ...
 ```
 
-其中 `class_1` 和 `class_2` 是你想要分类的类别的名字，并且在所有脚本中更改 `CLASS1_NAME` 和 `CLASS2_NAME`。图片文件名不重要。只要它们是 `.jpg` 或 `.png` 文件，它们就会被加载。
+其中 `class_1` 和 `class_2` 是你想要分类的类别的名字。你可以在 `commons/config.py` 中更改 `CLASS1_NAME` 和 `CLASS2_NAME`。图片文件名不重要。只要它们是 `.jpg` 或 `.png` 文件，它们就会被加载。
 
 ### 训练
 
@@ -72,7 +72,7 @@ data_root
 
 #### 更改 epochs 数量
 
-你可以通过更改 `train_gui.py` 中的 `NUM_EPOCHS` 变量来更改 epochs 数量。**不建议**将其设置为非常高的数字，因为它将花费很长时间来训练，而且分数不会有太大的提高。
+你可以通过更改 `commons/config.py` 中的 `DEFAULT_EPOCHS` 变量来更改 epochs 数量。**不建议**将其设置为非常高的数字，因为它将花费很长时间来训练，而且分数不会有太大的提高。
 
 ### 预测
 

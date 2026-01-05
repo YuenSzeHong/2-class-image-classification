@@ -6,10 +6,10 @@ Name:
 
 from commons.model import define_model
 from keras.preprocessing.image import ImageDataGenerator
+from commons.config import CLASS_NAMES, BATCH_SIZE, DEFAULT_EPOCHS, IMAGENET_MEAN, \
+    DEFAULT_MODEL_FILENAME, IMAGE_SIZE, TRAIN_DIR
 
-NUM_EPOCHS = 1
-CLASS1_NAME = "cat"
-CLASS2_NAME = "dog"
+NUM_EPOCHS = DEFAULT_EPOCHS
 
 
 # Training
@@ -19,16 +19,16 @@ def train():
     # create data generator
     datagen = ImageDataGenerator(featurewise_center=True)
     # specify imagenet mean values for centering
-    datagen.mean = [123.68, 116.779, 103.939]
+    datagen.mean = IMAGENET_MEAN
     # prepare training data
     train_data = datagen \
-        .flow_from_directory('dogs_vs_cats/train', class_mode='binary',
-                             batch_size=64, target_size=(224, 224), classes=[CLASS1_NAME, CLASS2_NAME])
+        .flow_from_directory(TRAIN_DIR, class_mode='binary',
+                             batch_size=BATCH_SIZE, target_size=IMAGE_SIZE, classes=CLASS_NAMES)
     # fit model
-    model.fit_generator(train_data, steps_per_epoch=len(
-        train_data), epochs=1, verbose=1)
+    model.fit(train_data, steps_per_epoch=len(
+        train_data), epochs=NUM_EPOCHS, verbose=1)
     # save model
-    model.save('s207909_model.h5')
+    model.save(DEFAULT_MODEL_FILENAME)
 
 
 # entry point, run the test harness

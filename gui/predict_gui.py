@@ -3,17 +3,16 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import \
     QApplication, QFileDialog, QGridLayout, QLabel, QPushButton, QWidget
 from keras.models import load_model
+from commons.config import CLASS1_NAME, CLASS2_NAME, IMAGENET_MEAN, IMAGE_SIZE
+from commons.utils import load_image
 
-from commons.test import load_image
-
-CLASS1_NAME = "cat"
-CLASS2_NAME = "dog"
 IMAGE_DISPLAY_SIZE = 512
 
 
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
+        self.model = None
 
         # set window title
         self.setWindowTitle("Prediction GUI")
@@ -66,6 +65,12 @@ class MainWindow(QWidget):
             self, "Open Model", "", "H5 Files (*.h5)")
         if file_path:
             self.model_path_label.setText(file_path)
+            try:
+                self.model = load_model(file_path)
+                self.result_text_label.setText("Model loaded successfully.")
+            except Exception as e:
+                self.result_text_label.setText(f"Error loading model: {str(e)}")
+                self.model = None
 
     def predict(self):
         # get image path
@@ -77,11 +82,18 @@ class MainWindow(QWidget):
             return
 
         # load model
-        model_path = self.model_path_label.text()
-        if not model_path:
-            self.result_text_label.setText("Please choose a model.")
-            return
-        model = load_model(model_path)
+        if not self.model:
+            model_path = self.model_path_label.text()
+            if not model_path:
+                self.result_text_label.setText("Please choose a model.")
+                return
+            try:
+                self.model = load_model(model_path)
+            except Exception as e:
+                self.result_text_label.setText(f"Error loading model: {str(e)}")
+                return
+        
+        model = self.model
 
         # load image
         image = load_image(image_path)

@@ -1,14 +1,12 @@
-# make a prediction for a new image.
 from keras.models import load_model
-
-from commons.test import load_image
+from commons.config import CLASS1_NAME, CLASS2_NAME, DEFAULT_MODEL_FILENAME
+from commons.utils import load_image
 
 # entry point, run the example
 end = False
-CLASS1_NAME = "cat"
-CLASS2_NAME = "dog"
+
 # load model
-model = load_model('s207909_model.h5')
+model = load_model(DEFAULT_MODEL_FILENAME)
 
 while not end:
 
@@ -26,5 +24,5 @@ while not end:
                 print(result, f" {CLASS1_NAME.capitalize()}!")
         else:
             end = True
-    except OSError as e:
+    except OSError:
         print("Cannot Open File")

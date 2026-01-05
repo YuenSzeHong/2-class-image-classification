@@ -2,11 +2,9 @@ from tkinter import filedialog, font, Tk, Label, Button
 
 from PIL import Image, ImageTk
 from keras.models import load_model
+from commons.config import CLASS1_NAME, CLASS2_NAME, IMAGE_SIZE
+from commons.utils import load_image
 
-from commons.test import load_image
-
-CLASS1_NAME = "man"
-CLASS2_NAME = "women"
 IMAGE_DISPLAY_SIZE = 512
 
 
@@ -29,6 +27,8 @@ class MainWindow:
         self.predict_button = Button(master, text="Predict", command=self.predict)
         self.result_label = Label(master, text="Result:")
         self.result_text_label = Label(master, text="")
+        
+        self.model = None
 
         # create layout, make file path in next row
         self.image_label.grid(row=0, column=0)
@@ -86,6 +86,12 @@ class MainWindow:
         )
         if file_path:
             self.model_path_label.config(text=file_path)
+            try:
+                self.model = load_model(file_path)
+                self.result_text_label.config(text="Model loaded successfully.")
+            except Exception as e:
+                self.result_text_label.config(text=f"Error: {e}")
+                self.model = None
 
     def predict(self):
         # get image path
@@ -97,11 +103,18 @@ class MainWindow:
             return
 
         # load model
-        model_path = self.model_path_label.cget("text")
-        if not model_path:
-            self.result_text_label.config(text="Please choose a model.")
-            return
-        model = load_model(model_path)
+        if not self.model:
+            model_path = self.model_path_label.cget("text")
+            if not model_path:
+                self.result_text_label.config(text="Please choose a model.")
+                return
+            try:
+                self.model = load_model(model_path)
+            except Exception as e:
+                self.result_text_label.config(text=f"Error: {e}")
+                return
+        
+        model = self.model
 
         # load image
         image = load_image(image_path)

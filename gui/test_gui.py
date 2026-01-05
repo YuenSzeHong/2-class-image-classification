@@ -5,10 +5,8 @@ from PyQt5.QtWidgets import \
     QApplication, QWidget, QPushButton, QLabel, QFileDialog, QTextEdit, \
     QVBoxLayout, QHBoxLayout, QProgressBar
 from tensorflow.keras.models import load_model
-from commons.test import load_image
-
-CLASS1_NAME = "cat"
-CLASS2_NAME = "dog"
+from commons.config import CLASS1_NAME, CLASS2_NAME
+from commons.utils import load_image
 
 
 class TestThread(QThread):

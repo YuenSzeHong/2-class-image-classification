@@ -56,7 +56,7 @@ data_root
         └── ...
 ```
 
-Where `class_1` and `class_2` are the names of the classes you want to classify, and change `CLASS1_NAME` and `CLASS2_NAME` in all scripts accordingly. Image filenames do not matter. As long as they are `.jpg` or `.png` files, they will be loaded.
+Where `class_1` and `class_2` are the names of the classes you want to classify. You can change `CLASS1_NAME` and `CLASS2_NAME` in `commons/config.py`. Image filenames do not matter. As long as they are `.jpg` or `.png` files, they will be loaded.
 
 ### Train
 
@@ -72,7 +72,7 @@ the test results are displayed on the GUI, look at the score. If you are not sat
 
 #### Change number of epochs
 
-You can change the number of epochs by changing the `NUM_EPOCHS` variable in `train_gui.py`. It is **NOT** recommended to set it to a very high number, because it will take a long time to train and the score will not improve much.
+You can change the number of epochs by changing the `NUM_EPOCHS` variable in `commons/config.py`. It is **NOT** recommended to set it to a very high number, because it will take a long time to train and the score will not improve much.
 
 ### Predict
 

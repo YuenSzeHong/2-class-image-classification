@@ -6,10 +6,9 @@ from tkinter import ttk
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.callbacks import Callback
 from commons.model import define_model
+from commons.config import CLASS_NAMES, CLASS1_NAME, CLASS2_NAME, BATCH_SIZE, DEFAULT_EPOCHS, IMAGENET_MEAN, IMAGE_SIZE
 
-NUM_EPOCHS = 3
-CLASS1_NAME = "cat"
-CLASS2_NAME = "dog"
+NUM_EPOCHS = DEFAULT_EPOCHS
 
 
 class UpdateWidgetsCallback(Callback):
@@ -17,6 +16,10 @@ class UpdateWidgetsCallback(Callback):
         super().__init__()
         self.progress_bar = progress_bar
         self.result_text = result_text
+        self.thread = None
+
+    def set_thread(self, thread):
+        self.thread = thread
 
     def on_train_begin(self, logs=None):
         if logs is not None:
@@ -27,6 +30,8 @@ class UpdateWidgetsCallback(Callback):
     def on_batch_end(self, batch, logs=None):
         if logs is not None:
             self.progress_bar["value"] = batch + 1
+        if self.thread and self.thread.stop_requested:
+            self.model.stop_training = True
 
     def on_epoch_end(self, epoch, logs=None):
         if logs is not None:
@@ -42,6 +47,10 @@ class TrainThread(Thread):
         self.model_path = model_path
         self.data_dir = data_dir
         self.update_widgets = update_widgets
+        self.stop_requested = False
+
+    def stop(self):
+        self.stop_requested = True
 
     def run(self):
         # define model
@@ -49,13 +58,13 @@ class TrainThread(Thread):
         # create data generator
         datagen = ImageDataGenerator(featurewise_center=True)
         # specify imagenet mean values for centering
-        datagen.mean = [123.68, 116.779, 103.939]
+        datagen.mean = IMAGENET_MEAN
         # prepare iterator
         train_it = datagen \
             .flow_from_directory(self.data_dir, class_mode='binary',
-                                 batch_size=64,
-                                 target_size=(224, 224),
-                                 classes=[CLASS1_NAME, CLASS2_NAME])
+                                 batch_size=BATCH_SIZE,
+                                 target_size=IMAGE_SIZE,
+                                 classes=CLASS_NAMES)
 
         # check files in directory
         if len(train_it.filenames) == 0:
@@ -164,17 +173,15 @@ class MainWindow:
 
         # start train thread
         self.train_thread = TrainThread(model_path, data_dir, self.update_widgets, self.result_text)
+        self.update_widgets.set_thread(self.train_thread)
         self.train_thread.start()
         self.train_button.config(state=DISABLED)
         self.stop_button.config(state=NORMAL)
 
     def stop_training(self):
-        try:
-            # stop train thread
+        if self.train_thread:
             self.train_thread.stop()
-        except AttributeError:
-            pass
-        self.result_text.insert(END, "Training stopped.\n")
+        self.result_text.insert(END, "Stopping training... please wait for current batch to finish.\n")
         # enable train button and disable stop button
         self.train_button.config(state=NORMAL)
         self.stop_button.config(state=DISABLED)

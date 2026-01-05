@@ -1,22 +1,19 @@
 import os
 
 # make a prediction for a new image.
-from commons.test import load_image
+from commons.utils import load_image
+from commons.config import CLASS1_NAME, CLASS2_NAME, DEFAULT_MODEL_FILENAME, TEST_DIR
 from keras.models import load_model
 
 # entry point, run the example
-end = False
-CLASS1_NAME = "cat"
-CLASS2_NAME = "dog"
-# load model
 
-model = load_model('s207909_model.h5')
+# load model
+model = load_model(DEFAULT_MODEL_FILENAME)
 
 correct = 0
 wrong = 0
 count = 0
-
-basedir = 'dogs_vs_cats/test/cats'
+basedir = os.path.join(TEST_DIR, CLASS1_NAME)
 wrong_file = []
 for file in os.listdir(basedir):
     count += 1
@@ -30,9 +27,9 @@ for file in os.listdir(basedir):
     else:
         correct += 1
     if count % 10 == 0:
-        print("Cats: Images {} Correct {} Wrong {} {}".format(count, correct, wrong, wrong_file))
+        print(f"{CLASS1_NAME.capitalize()}: Images {count} Correct {correct} Wrong {wrong} {wrong_file}")
 
-basedir = 'dogs_vs_cats/test/dogs'
+basedir = os.path.join(TEST_DIR, CLASS2_NAME)
 
 correct = 0
 wrong = 0
@@ -50,4 +47,4 @@ for file in os.listdir(basedir):
     else:
         correct += 1
     if count % 10 == 0:
-        print("Dogs: Images {} Correct {} Wrong {} {}".format(count, correct, wrong, wrong_file))
+        print(f"{CLASS2_NAME.capitalize()}: Images {count} Correct {correct} Wrong {wrong} {wrong_file}")

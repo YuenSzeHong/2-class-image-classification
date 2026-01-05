@@ -1,14 +1,30 @@
-from PyQt5.QtCore import Qt, QThread, pyqtSignal, pyqtSlot, QObject
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, \
-    QFileDialog, QTextEdit, QVBoxLayout, QHBoxLayout, QProgressBar
+from PyQt5.QtCore import QObject, Qt, QThread, pyqtSignal, pyqtSlot
+from PyQt5.QtWidgets import (
+    QApplication,
+    QFileDialog,
+    QHBoxLayout,
+    QLabel,
+    QProgressBar,
+    QPushButton,
+    QTextEdit,
+    QVBoxLayout,
+    QWidget,
+)
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.src.callbacks import Callback
 
+from commons.config import (
+    BATCH_SIZE,
+    CLASS1_NAME,
+    CLASS2_NAME,
+    CLASS_NAMES,
+    DEFAULT_EPOCHS,
+    IMAGE_SIZE,
+    IMAGENET_MEAN,
+)
 from commons.model import define_model
 
-NUM_EPOCHS = 3
-CLASS1_NAME = "cat"
-CLASS2_NAME = "dog"
+NUM_EPOCHS = DEFAULT_EPOCHS
 
 
 class UpdateWidgetsCallback(Callback, QObject):
@@ -19,6 +35,10 @@ class UpdateWidgetsCallback(Callback, QObject):
         super(QObject, self).__init__()
         self.progress_bar = progress_bar
         self.result_text = result_text
+        self.thread = None
+
+    def set_thread(self, thread):
+        self.thread = thread
 
     def on_train_begin(self, logs=None):
         if logs is not None:
@@ -30,6 +50,8 @@ class UpdateWidgetsCallback(Callback, QObject):
     def on_batch_end(self, batch, logs=None):
         if logs is not None:
             self.progress_bar.setValue(batch + 1)
+        if self.thread and self.thread.stop_requested:
+            self.model.stop_training = True
 
     def on_epoch_end(self, epoch, logs=None):
         if logs is not None:
@@ -47,6 +69,10 @@ class TrainThread(QThread):
         self.model_path = model_path
         self.data_dir = data_dir
         self.update_widgets = update_widgets
+        self.stop_requested = False
+
+    def stop(self):
+        self.stop_requested = True
 
     @pyqtSlot()
     def run(self):
@@ -55,13 +81,13 @@ class TrainThread(QThread):
         # create data generator
         datagen = ImageDataGenerator(featurewise_center=True)
         # specify imagenet mean values for centering
-        datagen.mean = [123.68, 116.779, 103.939]
+        datagen.mean = IMAGENET_MEAN
         # prepare iterator
         train_it = datagen \
             .flow_from_directory(self.data_dir, class_mode='binary',
-                                 batch_size=64,
-                                 target_size=(224, 224),
-                                 classes=[CLASS1_NAME, CLASS2_NAME])
+                                 batch_size=BATCH_SIZE,
+                                 target_size=IMAGE_SIZE,
+                                 classes=CLASS_NAMES)
 
         # fit model
         training = model.fit(train_it, steps_per_epoch=len(train_it),
@@ -171,20 +197,27 @@ class MainWindow(QWidget):
         # start train thread
         self.train_thread = TrainThread(
             model_path, data_dir, self.update_widgets)
+        self.update_widgets.set_thread(self.train_thread)
         self.train_thread.finished.connect(self.train_finished)
         self.train_thread.start()
         self.train_button.setEnabled(False)
         self.stop_button.setEnabled(True)
 
     def stop_training(self):
-        self.train_thread.terminate()
-        self.result_text.append("Training stopped.")
+        if self.train_thread:
+            # Request stop safely
+            self.train_thread.stop()
+            # We do NOT termiante immediately to allow clean exit via callback logic
+            # Use terminate only if it hangs? For now trust the callback.
+            # But UI needs to wait? No, just let it finish.
+             
+        self.result_text.append("Stopping training... please wait for current batch to finish.")
         # enable train button and disable stop button
         self.train_button.setEnabled(True)
         self.stop_button.setEnabled(False)
 
     def train_finished(self, accuracy, loss):
-        self.result_text.append(f"Training finished. " +
+        self.result_text.append("Training finished. " +
                                 f"Accuracy: {accuracy}, Loss: {loss}")
         self.train_button.setEnabled(True)
         self.stop_button.setEnabled(False)

@@ -4,10 +4,12 @@ from keras.layers import Flatten
 from keras.models import Model
 from keras.optimizers import SGD
 
+from commons.config import INPUT_SHAPE, LEARNING_RATE, MOMENTUM
+
 
 def define_model():
     # load model
-    model = VGG16(include_top=False, input_shape=(224, 224, 3))
+    model = VGG16(include_top=False, input_shape=INPUT_SHAPE)
     # mark loaded layers as not trainable
     for layer in model.layers:
         layer.trainable = False
@@ -18,6 +20,6 @@ def define_model():
     # define new model
     model = Model(inputs=model.inputs, outputs=output)
     # compile model
-    opt = SGD(learning_rate=0.001, momentum=0.9)
+    opt = SGD(learning_rate=LEARNING_RATE, momentum=MOMENTUM)
     model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
     return model

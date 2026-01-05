@@ -1,10 +1,8 @@
 import os
 from tkinter import filedialog, messagebox, scrolledtext, font, Tk, Label, Button, END
 from tensorflow.keras.models import load_model
-from commons.test import load_image
-
-CLASS1_NAME = "cat"
-CLASS2_NAME = "dog"
+from commons.config import CLASS1_NAME, CLASS2_NAME
+from commons.utils import load_image
 
 
 class TestThread:
